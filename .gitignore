@@ -1,4 +1,8 @@
 /vendor/
+/var/templates_c/*
+/var/cache/*
+!/var/templates_c/.gitkeep
+!/var/cache/.gitkeep
 .env
 .idea/
 .vscode/
