@@ -1,0 +1,26 @@
+{
+  "name": "ab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+      "css:build": "sass assets/scss/app.scss public/assets/css/app.css --load-path=node_modules --style=compressed --no-source-map",
+      "css:watch": "sass --watch assets/scss/app.scss public/assets/css/app.css --load-path=node_modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/littleonepiggy/ab.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/littleonepiggy/ab/issues"
+  },
+  "homepage": "https://github.com/littleonepiggy/ab#readme",
+  "devDependencies": {
+    "bootstrap": "^5.3.9",
+    "sass": "^1.108.2"
+  }
+}

@@ -12,10 +12,15 @@ final class ArticleController
         $this->view = $view;
     }
 
-    public function index()
+    public function index(): string
     {
         return $this->view->render('article.tpl', [
-            'title' => 'Статьи',
+            'title' => 'Как устроен блог на чистом PHP',
+            'article' => [
+                'description' => 'Первый шаблон: общий layout, SCSS и вывод данных через Smarty.',
+                'published_at' => '16 ноября 2026',
+                'views' => 128,
+            ],
         ]);
     }
 }
