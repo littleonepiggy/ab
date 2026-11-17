@@ -55,4 +55,18 @@ final class CategoryRepository
 
         return $category === false ? null : $category;
     }
+
+    public function byPost(int $postId): array
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT c.id, c.name, c.slug
+             FROM categories AS c
+             JOIN post_category AS pc ON pc.category_id = c.id
+             WHERE pc.post_id = ?
+             ORDER BY c.name'
+        );
+        $statement->execute([$postId]);
+
+        return $statement->fetchAll();
+    }
 }

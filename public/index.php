@@ -28,4 +28,5 @@ $router = new Router();
 
 $router->get('/', [$articleController, 'index']);
 $router->get('/category/{slug}', [$articleController, 'category']);
+$router->get('/article/{slug}', [$articleController, 'show']);
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

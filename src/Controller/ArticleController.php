@@ -48,4 +48,24 @@ final class ArticleController
             'category' => $category,
         ]);
     }
+
+    public function show(string $slug): string
+    {
+        $post = $this->postRepository->findBySlug($slug);
+
+        if ($post === null) {
+            http_response_code(404);
+
+            return $this->view->render('404.tpl', [
+                'title' => 'Статья не найдена',
+            ]);
+        }
+
+        $post['categories'] = $this->categoryRepository->byPost((int) $post['id']);
+
+        return $this->view->render('article.tpl', [
+            'title' => $post['title'],
+            'post' => $post,
+        ]);
+    }
 }

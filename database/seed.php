@@ -18,6 +18,7 @@ $categories = [
                 'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
                 'published_at' => '2026-11-14',
                 'views' => 128,
+                'extra_categories' => ['ipsum'],
             ],
             [
                 'title' => 'Lorem Ipsum',
@@ -63,6 +64,12 @@ $categories = [
             ],
         ],
     ],
+    [
+        'name' => 'Dolor',
+        'slug' => 'dolor',
+        'description' => 'Dolor.',
+        'posts' => [],
+    ],
 ];
 
 $pdo->beginTransaction();
@@ -83,6 +90,7 @@ $insertLink = $pdo->prepare(
 );
 
 $postCount = 0;
+$categoryIds = [];
 
 foreach ($categories as $category) {
     $insertCategory->execute([
@@ -91,8 +99,10 @@ foreach ($categories as $category) {
         $category['description'],
     ]);
 
-    $categoryId = (int) $pdo->lastInsertId();
+    $categoryIds[$category['slug']] = (int) $pdo->lastInsertId();
+}
 
+foreach ($categories as $category) {
     foreach ($category['posts'] as $post) {
         $insertPost->execute([
             $post['title'],
@@ -104,7 +114,14 @@ foreach ($categories as $category) {
             $post['published_at'],
         ]);
 
-        $insertLink->execute([(int) $pdo->lastInsertId(), $categoryId]);
+        $postId = (int) $pdo->lastInsertId();
+
+        $insertLink->execute([$postId, $categoryIds[$category['slug']]]);
+
+        foreach ($post['extra_categories'] ?? [] as $categorySlug) {
+            $insertLink->execute([$postId, $categoryIds[$categorySlug]]);
+        }
+
         $postCount++;
     }
 }

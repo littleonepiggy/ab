@@ -23,4 +23,17 @@ final class PostRepository
 
         return $statement->fetchAll();
     }
+
+    public function findBySlug(string $slug): ?array
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT p.id, p.title, p.slug, p.image, p.description, p.content, p.views, p.published_at
+             FROM posts AS p
+             WHERE p.slug = ?'
+        );
+        $statement->execute([$slug]);
+        $post = $statement->fetch();
+
+        return $post === false ? null : $post;
+    }
 }
