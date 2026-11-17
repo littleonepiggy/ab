@@ -20,12 +20,6 @@ final class ArticleController
         ]);
     }
 
-    /**
-     * Временные данные вместо БД.
-     * Позже заменим на CategoryRepository::allWithLatestPosts(3).
-     *
-     * @return array<int, array<string, mixed>>
-     */
     private function categories(): array
     {
         $categories = [
