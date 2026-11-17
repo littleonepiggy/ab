@@ -15,6 +15,7 @@
            href="/category/{$category.slug}?sort=date">По дате</a>
         <a class="btn btn-sm {if $sort == 'views'}btn-primary{else}btn-outline-primary{/if}"
            href="/category/{$category.slug}?sort=views">По просмотрам</a>
+        <span class="small text-muted ms-auto">Всего статей: {$total}</span>
     </div>
 
     <div class="row g-4">
@@ -43,4 +44,34 @@
             <p class="text-muted">В этой категории пока нет статей.</p>
         {/foreach}
     </div>
+
+    {if $totalPages > 1}
+        <nav class="mt-4" aria-label="Пагинация">
+            <ul class="pagination justify-content-center">
+                <li class="page-item {if $page <= 1}disabled{/if}">
+                    <a class="page-link"
+                       href="/category/{$category.slug}?sort={$sort}&page={$prevPage}"
+                       tabindex="-1">Назад</a>
+                </li>
+
+                {for $pageNumber=1 to $totalPages}
+                    <li class="page-item {if $pageNumber == $page}active{/if}">
+                        <a class="page-link"
+                           href="/category/{$category.slug}?sort={$sort}&page={$pageNumber}">
+                            {$pageNumber}
+                        </a>
+                    </li>
+                {/for}
+
+                <li class="page-item {if $page >= $totalPages}disabled{/if}">
+                    <a class="page-link"
+                       href="/category/{$category.slug}?sort={$sort}&page={$nextPage}">Вперёд</a>
+                </li>
+            </ul>
+        </nav>
+
+        <p class="text-center small text-muted mt-2">
+            Страница {$page} из {$totalPages}
+        </p>
+    {/if}
 {/block}

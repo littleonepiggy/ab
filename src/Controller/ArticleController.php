@@ -42,16 +42,28 @@ final class ArticleController
         }
 
         $sort = ($_GET['sort'] ?? '') === 'views' ? 'views' : 'date';
+        $perPage = 9;
+        $total = $this->postRepository->countByCategory((int) $category['id']);
+        $totalPages = max(1, (int) ceil($total / $perPage));
+        $page = min(max(1, (int) ($_GET['page'] ?? 1)), $totalPages);
+        $offset = ($page - 1) * $perPage;
 
         $category['posts'] = $this->postRepository->byCategory(
             (int) $category['id'],
-            $sort
+            $sort,
+            $perPage,
+            $offset
         );
 
         return $this->view->render('category.tpl', [
             'title' => $category['name'],
             'category' => $category,
             'sort' => $sort,
+            'page' => $page,
+            'total' => $total,
+            'totalPages' => $totalPages,
+            'prevPage' => max(1, $page - 1),
+            'nextPage' => min($totalPages, $page + 1),
         ]);
     }
 
