@@ -6,6 +6,8 @@ use App\Controller\ArticleController;
 use App\Main\Database;
 use App\Main\Router;
 use App\Main\View;
+use App\Repository\CategoryRepository;
+use App\Repository\PostRepository;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -18,7 +20,12 @@ $pdo = Database::connect(
     require dirname(__DIR__) . '/config/database.php'
 );
 
+$categoryRepository = new CategoryRepository($pdo);
+$postRepository = new PostRepository($pdo);
+$articleController = new ArticleController($categoryRepository, $postRepository, $view);
+
 $router = new Router();
 
-$router->get('/', [new ArticleController($pdo, $view), 'index']);
+$router->get('/', [$articleController, 'index']);
+$router->get('/category/{slug}', [$articleController, 'category']);
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

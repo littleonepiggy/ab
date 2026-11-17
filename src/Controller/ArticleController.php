@@ -3,54 +3,49 @@
 namespace App\Controller;
 
 use App\Main\View;
-use PDO;
+use App\Repository\CategoryRepository;
+use App\Repository\PostRepository;
 
 final class ArticleController
 {
-    private PDO $pdo;
+    private CategoryRepository $categoryRepository;
+    private PostRepository $postRepository;
     private View $view;
 
-    public function __construct(PDO $pdo, View $view)
-    {
-        $this->pdo = $pdo;
+    public function __construct(
+        CategoryRepository $categoryRepository,
+        PostRepository $postRepository,
+        View $view
+    ) {
+        $this->categoryRepository = $categoryRepository;
+        $this->postRepository = $postRepository;
         $this->view = $view;
     }
 
     public function index(): string
     {
         return $this->view->render('home.tpl', [
-            'categories' => $this->categories(),
+            'categories' => $this->categoryRepository->withLatestPosts(3),
         ]);
     }
 
-    private function categories(): array
+    public function category(string $slug): string
     {
-        $categories = $this->pdo->query(
-            'SELECT c.id, c.name, c.slug, c.description
-             FROM categories AS c
-             WHERE EXISTS (
-                 SELECT 1
-                 FROM post_category AS pc
-                 WHERE pc.category_id = c.id
-             )
-             ORDER BY c.id'
-        )->fetchAll();
+        $category = $this->categoryRepository->findBySlug($slug);
 
-        $posts = $this->pdo->prepare(
-            'SELECT p.id, p.title, p.slug, p.image, p.description, p.views, p.published_at
-             FROM posts AS p
-             JOIN post_category AS pc ON pc.post_id = p.id
-             WHERE pc.category_id = ?
-             ORDER BY p.published_at DESC
-             LIMIT 3'
-        );
+        if ($category === null) {
+            http_response_code(404);
 
-        foreach ($categories as &$category) {
-            $posts->execute([$category['id']]);
-            $category['posts'] = $posts->fetchAll();
+            return $this->view->render('404.tpl', [
+                'title' => 'Категория не найдена',
+            ]);
         }
-        unset($category);
 
-        return $categories;
+        $category['posts'] = $this->postRepository->byCategory((int) $category['id']);
+
+        return $this->view->render('category.tpl', [
+            'title' => $category['name'],
+            'category' => $category,
+        ]);
     }
 }
