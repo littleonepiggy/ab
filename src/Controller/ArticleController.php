@@ -81,9 +81,15 @@ final class ArticleController
 
         $post['categories'] = $this->categoryRepository->byPost((int) $post['id']);
 
+        $categoryIds = array_map(
+            static fn (array $category): int => (int) $category['id'],
+            $post['categories']
+        );
+
         return $this->view->render('article.tpl', [
             'title' => $post['title'],
             'post' => $post,
+            'similar' => $this->postRepository->similar((int) $post['id'], $categoryIds),
         ]);
     }
 }

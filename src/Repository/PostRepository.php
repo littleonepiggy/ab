@@ -56,4 +56,41 @@ final class PostRepository
 
         return $post === false ? null : $post;
     }
+
+    public function similar(int $postId, array $categoryIds, int $limit = 3): array
+    {
+        $statement = $this->pdo->prepare(
+            'SELECT p.id, p.title, p.slug, p.image, p.description, p.views, p.published_at,
+                    GROUP_CONCAT(pc.category_id) AS category_ids
+             FROM posts AS p
+             LEFT JOIN post_category AS pc ON pc.post_id = p.id
+             WHERE p.id <> ?
+             GROUP BY p.id'
+        );
+        $statement->execute([$postId]);
+        $posts = $statement->fetchAll();
+
+        $current = array_map('intval', $categoryIds);
+        $currentCount = count($current);
+
+        foreach ($posts as &$post) {
+            $candidate = $post['category_ids'] === null
+                ? []
+                : array_map('intval', explode(',', $post['category_ids']));
+
+            $intersection = count(array_intersect($current, $candidate));
+            $union = $currentCount + count(array_unique($candidate)) - $intersection;
+
+            $post['score'] = $union > 0 ? $intersection / $union : 0;
+            unset($post['category_ids']);
+        }
+        unset($post);
+
+        usort($posts, static function (array $a, array $b): int {
+            return $b['score'] <=> $a['score']
+                ?: strcmp($b['published_at'], $a['published_at']);
+        });
+
+        return array_slice($posts, 0, $limit);
+    }
 }

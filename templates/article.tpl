@@ -30,4 +30,37 @@
 
         <div class="fs-5" style="white-space: pre-line">{$post.content}</div>
     </article>
+
+    {if $similar}
+        <section class="mt-5">
+            <h2 class="h3 mb-3">Похожие статьи</h2>
+
+            <div class="row g-4">
+                {foreach $similar as $related}
+                    <div class="col-md-4">
+                        <article class="card h-100">
+                            {if !empty($related.image)}
+                                <img src="{$related.image}" class="card-img-top" alt="{$related.title}">
+                            {/if}
+
+                            <div class="card-body d-flex flex-column">
+                                <h3 class="h6 card-title">
+                                    <a class="text-decoration-none" href="/article/{$related.slug}">{$related.title}</a>
+                                </h3>
+
+                                <p class="card-text small text-muted">{$related.description}</p>
+
+                                <div class="mt-auto d-flex justify-content-between gap-2 small text-muted">
+                                    <time datetime="{$related.published_at}">
+                                        {$related.published_at|date_format:"d.m.Y"}
+                                    </time>
+                                    <span>Просмотры: {$related.views}</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                {/foreach}
+            </div>
+        </section>
+    {/if}
 {/block}
