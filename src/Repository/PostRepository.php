@@ -10,14 +10,19 @@ final class PostRepository
     {
     }
 
-    public function byCategory(int $categoryId): array
+    public function byCategory(int $categoryId, string $sort = 'date'): array
     {
+        $orderBy = match ($sort) {
+            'views' => 'p.views DESC',
+            default => 'p.published_at DESC',
+        };
+
         $statement = $this->pdo->prepare(
-            'SELECT p.id, p.title, p.slug, p.image, p.description, p.views, p.published_at
+            "SELECT p.id, p.title, p.slug, p.image, p.description, p.views, p.published_at
              FROM posts AS p
              JOIN post_category AS pc ON pc.post_id = p.id
              WHERE pc.category_id = ?
-             ORDER BY p.published_at DESC'
+             ORDER BY {$orderBy}"
         );
         $statement->execute([$categoryId]);
 

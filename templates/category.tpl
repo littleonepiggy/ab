@@ -9,6 +9,14 @@
         <p class="text-muted mb-0">{$category.description}</p>
     </div>
 
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+        <span class="small text-muted">Сортировка:</span>
+        <a class="btn btn-sm {if $sort == 'date'}btn-primary{else}btn-outline-primary{/if}"
+           href="/category/{$category.slug}?sort=date">По дате</a>
+        <a class="btn btn-sm {if $sort == 'views'}btn-primary{else}btn-outline-primary{/if}"
+           href="/category/{$category.slug}?sort=views">По просмотрам</a>
+    </div>
+
     <div class="row g-4">
         {foreach $category.posts as $post}
             <div class="col-md-6 col-xl-4">

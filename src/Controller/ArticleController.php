@@ -41,11 +41,17 @@ final class ArticleController
             ]);
         }
 
-        $category['posts'] = $this->postRepository->byCategory((int) $category['id']);
+        $sort = ($_GET['sort'] ?? '') === 'views' ? 'views' : 'date';
+
+        $category['posts'] = $this->postRepository->byCategory(
+            (int) $category['id'],
+            $sort
+        );
 
         return $this->view->render('category.tpl', [
             'title' => $category['name'],
             'category' => $category,
+            'sort' => $sort,
         ]);
     }
 
