@@ -5,5 +5,5 @@ return [
     'port'     => '3306',
     'database' => 'ab',
     'username' => 'root',
-    'password' => '',
+    'password' => '159308',
 ];

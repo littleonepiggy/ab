@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Controller\ArticleController;
+use App\Main\Database;
 use App\Main\Router;
 use App\Main\View;
 
@@ -13,7 +14,11 @@ $view = new View(
     varDir:      dirname(__DIR__) . '/var',
 );
 
+$pdo = Database::connect(
+    require dirname(__DIR__) . '/config/database.php'
+);
+
 $router = new Router();
 
-$router->get('/', [new ArticleController($view), 'index']);
+$router->get('/', [new ArticleController($pdo, $view), 'index']);
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);

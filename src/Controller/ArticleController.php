@@ -3,13 +3,16 @@
 namespace App\Controller;
 
 use App\Main\View;
+use PDO;
 
 final class ArticleController
 {
+    private PDO $pdo;
     private View $view;
 
-    public function __construct(View $view)
+    public function __construct(PDO $pdo, View $view)
     {
+        $this->pdo = $pdo;
         $this->view = $view;
     }
 
@@ -22,72 +25,29 @@ final class ArticleController
 
     private function categories(): array
     {
-        $categories = [
-            [
-                'name' => 'Lorem',
-                'slug' => 'lorem',
-                'description' => 'Lorem.',
-                'posts' => [
-                    [
-                        'title' => 'Lorem Ipsum',
-                        'slug' => 'test-1',
-                        'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                        'published_at' => '2026-11-14',
-                        'views' => 128,
-                    ],
-                    [
-                        'title' => 'Lorem Ipsum',
-                        'slug' => 'test-2',
-                        'description' => 'Quisque metus turpis, commodo eget tincidunt eget, vulputate in odio.',
-                        'published_at' => '2026-11-10',
-                        'views' => 94,
-                    ],
-                    [
-                        'title' => 'Lorem Ipsum.',
-                        'slug' => 'test-3',
-                        'description' => 'Nulla facilisi.',
-                        'published_at' => '2026-11-06',
-                        'views' => 76,
-                    ],
-                ],
-            ],
-            [
-                'name' => 'Ipsum',
-                'slug' => 'ipsum',
-                'description' => 'Ipsum.',
-                'posts' => [
-                    [
-                        'title' => 'Lorem Ipsum',
-                        'slug' => 'test-1',
-                        'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-                        'published_at' => '2026-11-14',
-                        'views' => 128,
-                    ],
-                    [
-                        'title' => 'Lorem Ipsum',
-                        'slug' => 'test-2',
-                        'description' => 'Quisque metus turpis, commodo eget tincidunt eget, vulputate in odio.',
-                        'published_at' => '2026-11-10',
-                        'views' => 94,
-                    ],
-                    [
-                        'title' => 'Lorem Ipsum.',
-                        'slug' => 'test-3',
-                        'description' => 'Nulla facilisi.',
-                        'published_at' => '2026-11-06',
-                        'views' => 76,
-                    ],
-                ],
-            ],
-        ];
+        $categories = $this->pdo->query(
+            'SELECT c.id, c.name, c.slug, c.description
+             FROM categories AS c
+             WHERE EXISTS (
+                 SELECT 1
+                 FROM post_category AS pc
+                 WHERE pc.category_id = c.id
+             )
+             ORDER BY c.id'
+        )->fetchAll();
+
+        $posts = $this->pdo->prepare(
+            'SELECT p.id, p.title, p.slug, p.image, p.description, p.views, p.published_at
+             FROM posts AS p
+             JOIN post_category AS pc ON pc.post_id = p.id
+             WHERE pc.category_id = ?
+             ORDER BY p.published_at DESC
+             LIMIT 3'
+        );
 
         foreach ($categories as &$category) {
-            usort(
-                $category['posts'],
-                static fn (array $a, array $b): int => strcmp($b['published_at'], $a['published_at'])
-            );
-
-            $category['posts'] = array_slice($category['posts'], 0, 3);
+            $posts->execute([$category['id']]);
+            $category['posts'] = $posts->fetchAll();
         }
         unset($category);
 
