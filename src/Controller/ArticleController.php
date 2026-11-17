@@ -6,7 +6,8 @@ use App\Main\View;
 
 final class ArticleController
 {
-    private $view;
+    private View $view;
+
     public function __construct(View $view)
     {
         $this->view = $view;
@@ -14,13 +15,88 @@ final class ArticleController
 
     public function index(): string
     {
-        return $this->view->render('article.tpl', [
-            'title' => 'Как устроен блог на чистом PHP',
-            'article' => [
-                'description' => 'Первый шаблон: общий layout, SCSS и вывод данных через Smarty.',
-                'published_at' => '16 ноября 2026',
-                'views' => 128,
-            ],
+        return $this->view->render('home.tpl', [
+            'categories' => $this->categories(),
         ]);
+    }
+
+    /**
+     * Временные данные вместо БД.
+     * Позже заменим на CategoryRepository::allWithLatestPosts(3).
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function categories(): array
+    {
+        $categories = [
+            [
+                'name' => 'Lorem',
+                'slug' => 'lorem',
+                'description' => 'Lorem.',
+                'posts' => [
+                    [
+                        'title' => 'Lorem Ipsum',
+                        'slug' => 'test-1',
+                        'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                        'published_at' => '2026-11-14',
+                        'views' => 128,
+                    ],
+                    [
+                        'title' => 'Lorem Ipsum',
+                        'slug' => 'test-2',
+                        'description' => 'Quisque metus turpis, commodo eget tincidunt eget, vulputate in odio.',
+                        'published_at' => '2026-11-10',
+                        'views' => 94,
+                    ],
+                    [
+                        'title' => 'Lorem Ipsum.',
+                        'slug' => 'test-3',
+                        'description' => 'Nulla facilisi.',
+                        'published_at' => '2026-11-06',
+                        'views' => 76,
+                    ],
+                ],
+            ],
+            [
+                'name' => 'Ipsum',
+                'slug' => 'ipsum',
+                'description' => 'Ipsum.',
+                'posts' => [
+                    [
+                        'title' => 'Lorem Ipsum',
+                        'slug' => 'test-1',
+                        'description' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                        'published_at' => '2026-11-14',
+                        'views' => 128,
+                    ],
+                    [
+                        'title' => 'Lorem Ipsum',
+                        'slug' => 'test-2',
+                        'description' => 'Quisque metus turpis, commodo eget tincidunt eget, vulputate in odio.',
+                        'published_at' => '2026-11-10',
+                        'views' => 94,
+                    ],
+                    [
+                        'title' => 'Lorem Ipsum.',
+                        'slug' => 'test-3',
+                        'description' => 'Nulla facilisi.',
+                        'published_at' => '2026-11-06',
+                        'views' => 76,
+                    ],
+                ],
+            ],
+        ];
+
+        foreach ($categories as &$category) {
+            usort(
+                $category['posts'],
+                static fn (array $a, array $b): int => strcmp($b['published_at'], $a['published_at'])
+            );
+
+            $category['posts'] = array_slice($category['posts'], 0, 3);
+        }
+        unset($category);
+
+        return $categories;
     }
 }
