@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use App\Controller\ArticleController;
+use App\Controller\CategoryController;
+use App\Controller\HomeController;
 use App\Main\Database;
 use App\Main\Router;
 use App\Main\View;
@@ -22,11 +24,14 @@ $pdo = Database::connect(
 
 $categoryRepository = new CategoryRepository($pdo);
 $postRepository = new PostRepository($pdo);
-$articleController = new ArticleController($categoryRepository, $postRepository, $view);
+
+$homeController = new HomeController($categoryRepository, $view);
+$categoryController = new CategoryController($categoryRepository, $postRepository, $view);
+$articleController = new ArticleController($postRepository, $categoryRepository, $view);
 
 $router = new Router();
 
-$router->get('/', [$articleController, 'index']);
-$router->get('/category/{slug}', [$articleController, 'category']);
+$router->get('/', [$homeController, 'index']);
+$router->get('/category/{slug}', [$categoryController, 'show']);
 $router->get('/article/{slug}', [$articleController, 'show']);
 $router->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
