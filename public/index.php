@@ -13,6 +13,8 @@ use App\Repository\PostRepository;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+session_start();
+
 $view = new View(
     templateDir: dirname(__DIR__) . '/templates',
     varDir:      dirname(__DIR__) . '/var',

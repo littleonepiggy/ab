@@ -34,7 +34,15 @@ final class ArticleController
             ]);
         }
 
-        $post['categories'] = $this->categoryRepository->byPost((int) $post['id']);
+        $postId = (int) $post['id'];
+
+        if (!isset($_SESSION['viewed_posts'][$postId])) {
+            $this->postRepository->incrementViews($postId);
+            $_SESSION['viewed_posts'][$postId] = true;
+            $post['views']++;
+        }
+
+        $post['categories'] = $this->categoryRepository->byPost($postId);
 
         $categoryIds = array_map(
             static fn (array $category): int => (int) $category['id'],

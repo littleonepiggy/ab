@@ -44,6 +44,14 @@ final class PostRepository
         return (int) $statement->fetchColumn();
     }
 
+    public function incrementViews(int $postId): void
+    {
+        $statement = $this->pdo->prepare(
+            'UPDATE posts SET views = views + 1 WHERE id = ?'
+        );
+        $statement->execute([$postId]);
+    }
+
     public function findBySlug(string $slug): ?array
     {
         $statement = $this->pdo->prepare(
