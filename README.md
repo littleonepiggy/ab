@@ -2,6 +2,12 @@
 
 Небольшой блог с категориями и статьями.
 
+## Скриншоты
+
+![Главная](docs/screenshots/home.png)
+![Категория](docs/screenshots/category.png)
+![Статья](docs/screenshots/article.png)
+
 ## Стек
 
 - PHP 8.1+ (в Docker'е 8.4)
