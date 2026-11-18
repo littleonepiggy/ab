@@ -4,8 +4,13 @@
 
 ## Скриншоты
 
+Главная страница
 ![Главная](docs/screenshots/home.png)
+
+Страница категории
 ![Категория](docs/screenshots/category.png)
+
+Страница статьи
 ![Статья](docs/screenshots/article.png)
 
 ## Стек
