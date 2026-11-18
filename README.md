@@ -28,7 +28,7 @@ docker compose exec php php database/seed.php
 
 Сайт: `http://localhost:8080`
 
-MySQL с хоста: `127.0.0.1:3307`, база `ab`, пользователь `blog`, пароль `blog_secret`.
+MySQL с хоста: `127.0.0.1:3307`, база `ab`, пользователь `ab`, пароль `ab`.
 
 Схема применяется автоматически при первом создании volume. Если менял `database/schema.sql`:
 
